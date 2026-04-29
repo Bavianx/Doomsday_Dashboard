@@ -1,3 +1,5 @@
+<!-- Maybe add emojis for each title breaks up the wordy text on the dashboard, Fix colour scheme for app, box background colour for app depth-->
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,16 +7,34 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-dark text-light">
-    <nav class="navbar navbar-dark bg-black px-4">
-        <span class="navbar-brand fw-bold"> Doomsday Dashboard</span>
-        <span class="text-danger fw-bold">
-            Global Risk: {{ global_score.score }}/10
-        </span>
-    </nav>
+
+
+<!-- Navbar: Logo | Search | Local Time -->
+<div class="container-fluid px-4 py-3 d-flex align-items-center justify-content-between border-bottom border-secondary">
+    <h4 class="text-danger fw-bold mb-0"> LOGO </h4>
+    <input type="text" class="form-control w-50 bg-dark text-white border-secondary" placeholder="">
+    <div class="text-end d-flex align-items-center gap-2">
+        <svg width="90" height="80" viewBox="0 0 400 400">
+            <!-- Full circle clock face                                                         Fix placement as it needs to be larger to overflow--> 
+            <circle cx="200" cy="200" r="160" fill="#1a1a2e" stroke="#e94560" stroke-width="6"/>
+            <!-- 12 marker (top - midnight) -->
+            <line x1="200" y1="45" x2="200" y2="75" stroke="#e94560" stroke-width="4"/>
+            <!-- 6 marker (bottom — safe zone) -->
+            <line x1="200" y1="355" x2="200" y2="325" stroke="#444" stroke-width="3"/>
+            <!-- 9 marker (left — midpoint) -->
+            <line x1="45" y1="200" x2="75" y2="200" stroke="#444" stroke-width="3"/>
+            <!-- Clock hand -->
+            <line x1="200" y1="200"
+                x2="{{ tip_x }}" y2="{{ tip_y }}"
+                stroke="#e94560" stroke-width="6" stroke-linecap="round"/>
+            <!-- Centre dot -->
+            <circle cx="200" cy="200" r="8" fill="#e94560"/>
+        </svg>
+    </div>
+</div>
+<!-- Stock Ticker                          Figure out if this is going on the top or under nav bar mess with colouring perhaps transparent viewing would be better-->
 <div class="bg-black py-2 overflow-hidden">
     <div class="ticker-wrap">
-        
-        <!--First ticker loop-->
         <div class="ticker">
             {% for ticker in ticker_data %}
             <span class="mx-4">
@@ -28,8 +48,6 @@
             </span>
             {% endfor %}
         </div>
-
-        <!-- Second ticker loop-->
         <div class="ticker ticker-delayed">
             {% for ticker in ticker_data %}
             <span class="mx-4">
@@ -43,9 +61,103 @@
             </span>
             {% endfor %}
         </div>
-
     </div>
 </div>
+<!-- Threat Categories Bar (full width)       Maybe fix this so it isnt the whole page length just half-->
+<div class="container-fluid px-4 py-2 border-bottom border-secondary">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+        <small class="text-white me-2">THREAT LEVELS</small>
+        {% for category, score in category_scores.items %}
+            <span class="text-white">|</span>
+            {% if score >= 7 %}
+                <span class="text-danger fw-bold">{{ category|upper }}: {{ score }}/10</span>
+            {% elif score >= 4 %}
+                <span class="text-warning fw-bold">{{ category|upper }}: {{ score }}/10</span>
+            {% else %}
+                <span class="text-success fw-bold">{{ category|upper }}: {{ score }}/10</span>
+            {% endif %}
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Row -->
+<div class="container-fluid px-4 mt-3">
+    <div class="row g-3">
+
+        <!-- LEFT: News Feed -->
+        <div class="col-md-4">
+            <h6 class="text-warning mb-3"> LIVE THREAT INTELLIGENCE</h6>
+            <div class="card bg-dark border-secondary p-3">
+                {% for item in news_items %}
+                    <div class="d-flex align-items-start mb-2 pb-2 border-bottom border-secondary">
+                        {% if item.ai_score >= 7 %}
+                            <span class="badge bg-danger me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
+                        {% elif item.ai_score >= 4 %}
+                            <span class="badge bg-warning text-dark me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
+                        {% else %}
+                            <span class="badge bg-success me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
+                        {% endif %}
+                        <div class="d-flex justify-content-between w-100">
+                            <small class="text-light">{{ item.headline }}</small>
+                            <span class="text-warning fw-bold ms-2 flex-shrink-0">{{ item.ai_score }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- CENTRE: Stock News + Country Risk Map -->
+        <div class="col-md-4">
+            <h6 class="text-warning mb-3"> WORLD STOCK NEWS</h6>
+            <div class="card bg-dark border-secondary mb-3" style="min-height: 160px;">
+                <div class="card-body">
+                    <small class="text-secondary">Stock news feed — coming soon</small>
+                </div>
+            </div>
+
+            <h6 class="text-warning mb-3"> COUNTRY RISK MAP</h6>
+            <div class="card bg-dark border-secondary" style="min-height: 220px;">
+                <div class="card-body">
+                    <small class="text-secondary">Plotly choropleth map — coming soon</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Clock + Global Score + AI Summary -->
+        <div class="col-md-4">
+            <div>
+                <small class="text-secondary d-block text-end">LOCAL TIME</small>
+            <div class="text-warning text-end" id="live-clock">--:--:--</div>
+            <!-- Global Risk Score -->
+            <h6 class="text-warning mb-2"> GLOBAL RISK SCORE</h6>
+            <div class="card bg-danger mb-3">
+                <div class="card-body text-center py-2">
+                    <h2 class="fw-bold mb-0">{{ global_score.score }}</h2>
+                    <small>out of 10</small>
+                </div>
+            </div>
+
+            <!-- AI Summary -->
+            <h6 class="text-warning mb-2"> AI ASSESSMENT</h6>
+            <div class="card bg-dark border-secondary">
+                <div class="card-body">
+                    <pre class="text-light small mb-0" style="white-space: pre-wrap;">{{ summary.content }}</pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Live clock script -->
+<script>
+function updateClock() {
+    document.getElementById('live-clock').textContent = new Date().toLocaleTimeString();
+}
+setInterval(updateClock, 1000);
+updateClock();
+</script>
 
 <style>
 .ticker-wrap {
@@ -59,14 +171,11 @@
     display: inline-flex;
     white-space: nowrap;
     animation: ticker 30s linear infinite;
-    animation-delay: 0s;
 }
-
 .ticker-delayed {
     animation-delay: 15s;
     animation-fill-mode: backwards;
 }
-
 @keyframes ticker {
     0% { transform: translateX(100vw); }
     50% { transform: translateX(-100%); }
@@ -74,59 +183,6 @@
     100% { transform: translateX(-100%); }
 }
 </style>
-    <div class="container-fluid mt-4">
-        <div class="row">
-            
-            <!-- Left — News Feed -->
-            <div class="col-md-5">
-                <h5 class="text-warning"> Live Threat Intelligence</h5>
-                {% for item in news_items %}
-                <div class="card bg-secondary mb-2">
-                    <div class="card-body py-2">
-                        {% if item.ai_score >= 7 %}
-                            <span class="badge bg-danger me-2">{{ item.category|upper }}</span>
-                        {% elif item.ai_score >= 4 %}
-                            <span class="badge bg-warning text-dark me-2">{{ item.category|upper }}</span>
-                        {% else %}
-                           <span class="badge bg-success me-2">{{ item.category|upper }}</span>
-                        {% endif %}
-                        <small>{{ item.headline }}</small>
-                        <span class="float-end text-warning fw-bold">{{ item.ai_score }}</span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
 
-            <!-- Middle Category Scores -->
-            <div class="col-md-3">
-                <h5 class="text-warning"> Threat Categories</h5>
-                {% for category, score in category_scores.items %}
-                <div class="card bg-secondary mb-2">
-                    <div class="card-body py-2 d-flex justify-content-between">
-                        <span>{{ category|upper }}</span>
-                        <span class="text-warning fw-bold">{{ score }}/10</span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-
-            <!-- Right Global Score + Summary -->
-            <div class="col-md-4">
-                <h5 class="text-warning"> Global Risk Score</h5>
-                <div class="card bg-danger mb-3">
-                    <div class="card-body text-center">
-                        <h1 class="display-4 fw-bold">{{ global_score.score }}</h1>
-                        <p>out of 10</p>
-                    </div>
-                </div>
-                <h5 class="text-warning"> AI Assessment</h5>     <!-- Current placeholder info reuses data displayed (this will change upon addition of Anthropic credits added) -->
-                <div class="card bg-secondary">
-                    <div class="card-body">
-                        <pre class="text-light small">{{ summary.content }}</pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </body>
 </html>

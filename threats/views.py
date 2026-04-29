@@ -6,6 +6,8 @@ from .AI_Scorer import score_news_items
 from .risk_calculator import calculate_global_risk
 from .summary_generator import generate_summary
 import yfinance as yf
+import math
+
 
 def fetch_news_view(request):
     fetch_news()
@@ -40,6 +42,11 @@ def dashboard(request):
     global_score = ThreatScore.objects.filter(
         category="global"
     ).order_by('-created_at').first()
+
+    score_value = global_score.score if global_score else 5.0       #Grab the current global risk score or set a default of 5 to minimise broken display
+    angle_rad = math.radians((score_value / 10) * 180 + 90)  #radian = the current global risk score / 10 (max global risk score) * 180 degrees + 90
+    tip_x = round(200 + 150 * math.sin(angle_rad), 2)       #200 will be the size of the SVG clock and 150 is the size of the hand 
+    tip_y = round(200 - 150 * math.cos(angle_rad), 2)
     
     # Get latest AI summary
     summary = AISummary.objects.order_by('-generated_at').first()
@@ -52,8 +59,8 @@ def dashboard(request):
         stock = yf.Ticker(symbol)
         history = stock.history(period='1d') #identifies the previous day
         if not history.empty:
-            price = round(history['Close'].iloc[-1], 2)
-            change = round(history['Close'].iloc[-1] - history['Open'].iloc[-1], 2)
+            price = round(history['Close'].iloc[-1], 2) #identifies the close price from the df and gets the latest value to 2dp
+            change = round(history['Close'].iloc[-1] - history['Open'].iloc[-1], 2) #identifies the close price from the df and gets the latest value to 2dp
             ticker_data.append({
                 'symbol': symbol,
                 'price': price,
@@ -65,6 +72,9 @@ def dashboard(request):
         'global_score': global_score,
         'summary': summary,
         'ticker_data': ticker_data,
+        'tip_x': tip_x,        
+        'tip_y': tip_y,        
+        'score_value': score_value,
     }
     
     return render(request, 'threats/dashboard.html', context)
