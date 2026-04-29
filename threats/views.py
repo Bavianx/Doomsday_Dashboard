@@ -5,6 +5,7 @@ from .news_fetcher import fetch_news
 from .AI_Scorer import score_news_items
 from .risk_calculator import calculate_global_risk
 from .summary_generator import generate_summary
+import yfinance as yf
 
 def fetch_news_view(request):
     fetch_news()
@@ -42,12 +43,28 @@ def dashboard(request):
     
     # Get latest AI summary
     summary = AISummary.objects.order_by('-generated_at').first()
+        
+    # Fetch ticker data
+    tickers = ['SPY', 'QQQ', 'GLD', 'USO']
+    ticker_data = []
     
+    for symbol in tickers:
+        stock = yf.Ticker(symbol)
+        history = stock.history(period='1d') #identifies the previous day
+        if not history.empty:
+            price = round(history['Close'].iloc[-1], 2)
+            change = round(history['Close'].iloc[-1] - history['Open'].iloc[-1], 2)
+            ticker_data.append({
+                'symbol': symbol,
+                'price': price,
+                'change': change
+            })
     context = {
         'news_items': news_items,
         'category_scores': category_scores,
         'global_score': global_score,
         'summary': summary,
+        'ticker_data': ticker_data,
     }
     
     return render(request, 'threats/dashboard.html', context)
