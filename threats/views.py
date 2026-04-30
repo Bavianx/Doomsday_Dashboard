@@ -6,28 +6,31 @@ from .AI_Scorer import score_news_items
 from .risk_calculator import calculate_global_risk
 from .summary_generator import generate_summary
 import yfinance as yf
-import math
-
-
-def fetch_news_view(request):
-    fetch_news()
-    return HttpResponse("News fetched successfully!")
-
-def score_news_view(request):
-    score_news_items()
-    return HttpResponse("News scored successfully!")
-
-def avg_news_score(request):
-    calculate_global_risk()
-    return HttpResponse("Global risk score calculated!")
-
-def generate_summary_view(request):
-    generate_summary()
-    return HttpResponse("Summary created successfully!")
+import math, requests
+from decouple import config
 
 def dashboard(request):
-    # Get latest news items
-    news_items = NewsItem.objects.order_by('-created_at')[:10]
+    query = request.GET.get('q', '')    #Checks the URL for a query and a requested search after, else returns default
+    is_search = False
+    news_api_key = config('NEWS_API_KEY') # Live market news from NewsAPI for World stock news
+
+    if query:
+        threat_response = requests.get(
+            f"https://newsapi.org/v2/everything?q={query}&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}"
+        )
+        news_items = threat_response.json().get('articles', [])
+
+        market_response = requests.get(
+            f"https://newsapi.org/v2/everything?q={query}+market+economy&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}"
+        )
+        market_news = market_response.json().get('articles', [])
+        is_search = True
+
+    else:
+        news_items = NewsItem.objects.order_by('-created_at')[:10]  #Default data displayed incase users dont search
+        market_response = requests.get(
+            f"https://newsapi.org/v2/everything?q=stock+market+finance+economy&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}"
+        )
     
     # Get category scores
     category_scores = {}
@@ -66,6 +69,9 @@ def dashboard(request):
                 'price': price,
                 'change': change
             })
+    market_data = market_response.json()
+    market_news = market_data.get('articles', [])
+
     context = {
         'news_items': news_items,
         'category_scores': category_scores,
@@ -75,7 +81,27 @@ def dashboard(request):
         'tip_x': tip_x,        
         'tip_y': tip_y,        
         'score_value': score_value,
+        'market_news': market_news,
+        'query': query,
+        'is_search': is_search,
     }
     
     return render(request, 'threats/dashboard.html', context)
+
+
+def fetch_news_view(request):
+    fetch_news()
+    return HttpResponse("News fetched successfully!")
+
+def score_news_view(request):
+    score_news_items()
+    return HttpResponse("News scored successfully!")
+
+def avg_news_score(request):
+    calculate_global_risk()
+    return HttpResponse("Global risk score calculated!")
+
+def generate_summary_view(request):
+    generate_summary()
+    return HttpResponse("Summary created successfully!")
 

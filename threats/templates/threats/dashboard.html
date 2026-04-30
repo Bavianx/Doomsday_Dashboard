@@ -6,32 +6,7 @@
     <title> Doomsday Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-dark text-light">
-
-
-<!-- Navbar: Logo | Search | Local Time -->
-<div class="container-fluid px-4 py-3 d-flex align-items-center justify-content-between border-bottom border-secondary">
-    <h4 class="text-danger fw-bold mb-0"> LOGO </h4>
-    <input type="text" class="form-control w-50 bg-dark text-white border-secondary" placeholder="">
-    <div class="text-end d-flex align-items-center gap-2">
-        <svg width="90" height="80" viewBox="0 0 400 400">
-            <!-- Full circle clock face                                                         Fix placement as it needs to be larger to overflow--> 
-            <circle cx="200" cy="200" r="160" fill="#1a1a2e" stroke="#e94560" stroke-width="6"/>
-            <!-- 12 marker (top - midnight) -->
-            <line x1="200" y1="45" x2="200" y2="75" stroke="#e94560" stroke-width="4"/>
-            <!-- 6 marker (bottom — safe zone) -->
-            <line x1="200" y1="355" x2="200" y2="325" stroke="#444" stroke-width="3"/>
-            <!-- 9 marker (left — midpoint) -->
-            <line x1="45" y1="200" x2="75" y2="200" stroke="#444" stroke-width="3"/>
-            <!-- Clock hand -->
-            <line x1="200" y1="200"
-                x2="{{ tip_x }}" y2="{{ tip_y }}"
-                stroke="#e94560" stroke-width="6" stroke-linecap="round"/>
-            <!-- Centre dot -->
-            <circle cx="200" cy="200" r="8" fill="#e94560"/>
-        </svg>
-    </div>
-</div>
+<body style="background-color: #131313;">
 <!-- Stock Ticker                          Figure out if this is going on the top or under nav bar mess with colouring perhaps transparent viewing would be better-->
 <div class="bg-black py-2 overflow-hidden">
     <div class="ticker-wrap">
@@ -63,34 +38,85 @@
         </div>
     </div>
 </div>
-<!-- Threat Categories Bar (full width)       Maybe fix this so it isnt the whole page length just half-->
-<div class="container-fluid px-4 py-2 border-bottom border-secondary">
-    <div class="d-flex align-items-center gap-2 flex-wrap">
-        <small class="text-white me-2">THREAT LEVELS</small>
-        {% for category, score in category_scores.items %}
-            <span class="text-white">|</span>
-            {% if score >= 7 %}
-                <span class="text-danger fw-bold">{{ category|upper }}: {{ score }}/10</span>
-            {% elif score >= 4 %}
-                <span class="text-warning fw-bold">{{ category|upper }}: {{ score }}/10</span>
-            {% else %}
-                <span class="text-success fw-bold">{{ category|upper }}: {{ score }}/10</span>
-            {% endif %}
-        {% endfor %}
+
+<!-- Navbar + Clock row -->
+<div class="container-fluid px-4 py-2">
+    <div class="row align-items-center">
+        
+        <!-- Left: Logo + Search + Threat bar stacked -->
+        <div class="col-md-9">
+            <!-- Logo + Search -->
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h4 style="color: #30ffee; font-weight: bold;"> DOOMSDAY</h4>
+                <form method="GET" action="/threats/" class="d-flex w-75">
+                    <input type="text" name="q" value="{{ query }}"
+                        class="form-control bg-dark text-light border-secondary"
+                        placeholder="🔍 Search threats..."
+                        style="opacity: 0.6;">
+                    <button type="submit" style="display: none;"></button>
+                </form> <!-- maybe do this for only underneath the search bar-->
+            </div>
+            <!-- Threat categories -->
+             <h7 class="text-warning mb-3 fw-bold"> THREAT CATEGORIES</h7>
+            <div class="card bg-dark border-secondary mt-1" style="width: 75%;">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body py-2 d-flex justify-content-around align-items-center">
+                        {% for category, score in category_scores.items %}
+                            <div class="text-center">
+                                {% if score >= 7 %}
+                                    <span class="badge bg-danger me-1">{{ category|upper }}</span>
+                                    <span style="color: #FF3B30; font-weight: bold;">{{ score }}</span>
+                                {% elif score >= 4 %}
+                                    <span class="badge bg-warning text-dark me-1">{{ category|upper }}</span>
+                                    <span style="color: #FFD700; font-weight: bold;">{{ score }}</span>
+                                {% else %}
+                                    <span class="badge bg-success me-1">{{ category|upper }}</span>
+                                    <span style="color: #4ADE80; font-weight: bold;">{{ score }}</span>
+                                {% endif %}
+                            </div>
+                            {% if not forloop.last %}
+                                <span style="color: #A1A1AA;">|</span>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <!-- Right: Clock only -->
+        <div class="col-md-3 text-center">
+            <svg width="180" height="180" viewBox="0 0 400 400">
+                <circle cx="200" cy="200" r="160" fill="#131313" stroke="#FF3B30" stroke-width="6"/>
+                <line x1="200" y1="45" x2="200" y2="75" stroke="#FF3B30" stroke-width="4"/>
+                <line x1="117" y1="62" x2="129" y2="83" stroke="#FF3B30" stroke-width="2"/>
+                <line x1="61" y1="117" x2="87" y2="129" stroke="#FF3B30" stroke-width="2"/>
+                <line x1="45" y1="200" x2="75" y2="200" stroke="#FF3B30" stroke-width="2"/>
+                <line x1="61" y1="283" x2="87" y2="271" stroke="#FF3B30" stroke-width="2"/>
+                <line x1="117" y1="338" x2="129" y2="317" stroke="#FF3B30" stroke-width="2"/>
+                <line x1="200" y1="355" x2="200" y2="325" stroke="#FF3B30" stroke-width="3"/>
+                <line x1="200" y1="200" x2="{{ tip_x }}" y2="{{ tip_y }}"
+                    stroke="#FF3B30" stroke-width="6" stroke-linecap="round"/>
+                <circle cx="200" cy="200" r="8" fill="#FF3B30"/>
+            </svg>
+            <p class="small mt-1" style="color: #A1A1AA;"> Minutes to Midnight</p>
+        </div>
+
     </div>
 </div>
 
 <!-- Main Content Row -->
 <div class="container-fluid px-4 mt-3">
     <div class="row g-3">
-
         <!-- LEFT: News Feed -->
         <div class="col-md-4">
-            <h6 class="text-warning mb-3"> LIVE THREAT INTELLIGENCE</h6>
-            <div class="card bg-dark border-secondary p-3">
-                {% for item in news_items %}
-                    <div class="d-flex align-items-start mb-2 pb-2 border-bottom border-secondary">
+                {% if is_search %}
+                    🔍 LIVE THREAT INTELLIGENCE  | {{ query|upper }}       <!-- Query based search for specific items -->
+                {% else %}
+                     LIVE THREAT INTELLIGENCE
+                {% endif %}
+            <div class="card bg-dark border-secondary p-3"> 
+                {% for item in news_items %}            <!-- News items are colour coded based on AI severity scoring-->
+                    <div class="d-flex align-items-start mb-2 pb-2 border-bottom border-secondary">     
                         {% if item.ai_score >= 7 %}
                             <span class="badge bg-danger me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
                         {% elif item.ai_score >= 4 %}
@@ -109,14 +135,35 @@
 
         <!-- CENTRE: Stock News + Country Risk Map -->
         <div class="col-md-4">
-            <h6 class="text-warning mb-3"> WORLD STOCK NEWS</h6>
-            <div class="card bg-dark border-secondary mb-3" style="min-height: 160px;">
-                <div class="card-body">
-                    <small class="text-secondary">Stock news feed — coming soon</small>
+        <h6 class="text-warning mb-3"> WORLD STOCK NEWS</h6>
+        <div class="card bg-dark border-secondary" style="height: 300px; overflow: hidden;">    <!-- Content is looped and hidden once passed the height marker-->
+            <div class="card-body p-2 news-scroll-wrap">
+                <div class="news-scroll">
+                    {% for article in market_news %}
+                        <div class="mb-2 pb-2 border-bottom border-secondary">
+                            <a href="{{ article.url }}" target="_blank" class="text-light text-decoration-none">
+                                <small>{{ article.title }}</small>
+                            </a>
+                            <div>
+                                <small style="color: #A1A1AA;">{{ article.source.name }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <!-- Duplicate news loop -->
+                    {% for article in market_news %}
+                        <div class="mb-2 pb-2 border-bottom border-secondary">
+                            <a href="{{ article.url }}" target="_blank" class="text-light text-decoration-none">
+                                <small>{{ article.title }}</small>
+                            </a>
+                            <div>
+                                <small style="color: #A1A1AA;">{{ article.source.name }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
-
-            <h6 class="text-warning mb-3"> COUNTRY RISK MAP</h6>
+        </div>
+            <h6 class="text-warning mb-3"> COUNTRY RISK MAP</h6>                <!-- Needs finishing tomorrow-->
             <div class="card bg-dark border-secondary" style="min-height: 220px;">
                 <div class="card-body">
                     <small class="text-secondary">Plotly choropleth map — coming soon</small>
@@ -126,20 +173,23 @@
 
         <!-- RIGHT: Clock + Global Score + AI Summary -->
         <div class="col-md-4">
-            <div>
-                <small class="text-secondary d-block text-end">LOCAL TIME</small>
-            <div class="text-warning text-end" id="live-clock">--:--:--</div>
+            <div class="text-end">
+                <div class="card bg-dark border-secondary d-inline-block px-3 py-1">
+                    <small style="color: #A1A1AA;">LOCAL TIME</small>
+                    <div style="color: #FFD700; font-weight: bold;" id="live-clock">--:--:--</div>
+                </div>
+            </div>
             <!-- Global Risk Score -->
             <h6 class="text-warning mb-2"> GLOBAL RISK SCORE</h6>
             <div class="card bg-danger mb-3">
                 <div class="card-body text-center py-2">
                     <h2 class="fw-bold mb-0">{{ global_score.score }}</h2>
+                        <div style= "color: #13131300"></div>
                     <small>out of 10</small>
                 </div>
             </div>
-
             <!-- AI Summary -->
-            <h6 class="text-warning mb-2"> AI ASSESSMENT</h6>
+            <h6 class="text-warning mb-2"> AI ASSESSMENT</h6>       <!-- Will change based on User requested search for live threat intelligence items-->
             <div class="card bg-dark border-secondary">
                 <div class="card-body">
                     <pre class="text-light small mb-0" style="white-space: pre-wrap;">{{ summary.content }}</pre>
@@ -182,7 +232,69 @@ updateClock();
     50.001% { transform: translateX(100vw); }
     100% { transform: translateX(-100%); }
 }
-</style>
+.news-scroll-wrap {
+    overflow: hidden;
+    position: relative;
+}
 
+.news-scroll {
+    animation: scrollNews 30s linear infinite;
+}
+
+.news-scroll:hover {
+    animation-play-state: paused;
+}
+
+@keyframes scrollNews {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+/* Core colour theory for the applications design / headings, Subtext */
+:root {                     
+    --bg-primary: #131313;
+    --yellow: #FFD700;
+    --red: #ff3a30;
+    --green: #4ADE80;
+    --muted: #A1A1AA;
+}
+
+body {
+    background-color: var(--bg-primary) !important;
+    color: var(--muted);
+}
+
+/* Headings */
+h1, h3, h5, h6, h7 {
+    color: var(--yellow) !important;
+}
+
+/* Ticker bar */
+.bg-black {
+    background-color: #0a0a0a8a !important;
+}
+
+/* Threat category scores */
+.text-warning {
+    color: var(--yellow) !important;
+}
+
+.text-danger {
+    color: var(--red) !important;
+}
+
+.text-success {
+    color: var(--green) !important;
+}
+
+/* Background Cards */
+.card.bg-dark {
+    background-color: #1a1a1a !important;
+    border-color: #2a2a2a !important;
+}
+
+.card.bg-secondary {
+    background-color: #1e1e1e !important;
+}
+</style>
 </body>
 </html>
