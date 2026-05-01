@@ -18,9 +18,18 @@ def dashboard(request):
 
     if query:           #Incomplete query requests ( Search function does work and refreshes applications main page but doesnt pull data for specific query within the dashboard)
         threat_response = requests.get(
-            f"https://newsapi.org/v2/everything?q={query}&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}"
+            f'https://newsapi.org/v2/everything?q="{query}"&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}'
         )
-        news_items = threat_response.json().get('articles', [])
+        raw_articles = threat_response.json().get('articles', [])   
+        news_items = [ #Normalises the NewsAPI response to match the NewsItem structure created so the template can display both pieces of data without it causing internal errors
+            {
+                'headline': article.get('title', 'No title'), #NewsItem Structure: NewsAPI (just converts it)
+                'ai_score': '',
+                'category': 'search',
+                'url': article.get('url', '#') #NewsItem Structure: NewsAPI (just converts it)
+            }
+            for article in raw_articles
+        ]
 
         market_response = requests.get(
             f"https://newsapi.org/v2/everything?q={query}+market+economy&language=en&pageSize=10&sortBy=publishedAt&apiKey={news_api_key}"

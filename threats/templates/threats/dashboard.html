@@ -112,29 +112,39 @@
         <!-- LEFT: Live Intelligence News Feed -->
         <div class="col-md-4">
                 {% if is_search %}
-                    🔍 LIVE THREAT INTELLIGENCE | {{ query|upper }}       <!-- Query based search for specific items -->
+                     <h6> LIVE THREAT INTELLIGENCE   |   {{ query|upper }}  </h6>     <!-- Query based search for specific items -->
                 {% else %}
                      <h6>LIVE THREAT INTELLIGENCE</h6>
                 {% endif %}
             <div class="card bg-dark border-secondary p-3"> 
-                {% for item in news_items %}            <!-- News items are colour coded based on AI severity scoring-->
-                    <div class="d-flex align-items-start mb-2 pb-2 border-bottom border-secondary">     
-                        {% if item.ai_score >= 7 %}
-                            <span class="badge bg-danger me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>          <!-- Gathering Model data for HTML display -->
-                        {% elif item.ai_score >= 4 %}
-                            <span class="badge bg-warning text-dark me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
-                        {% else %}
-                            <span class="badge bg-success me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
-                        {% endif %}
+                {% for item in news_items %}           
+                    <div class="d-flex align-items-start mb-2 pb-2 border-bottom border-secondary">    
+                        {% if not is_search %} <!-- If is_search is False on default view it displays category badge and AI score from database NewsItems-->
+                        <!--If is_search is True within the search view, both category and AI scores are hidden because live NewsAPI results arent passed through AI scorer-->
+                            {% if item.ai_score >= 7 %} <!-- News items are colour coded based on AI severity scoring-->
+                                <span class="badge bg-danger me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>          <!-- Gathering Model data for HTML display -->
+                            {% elif item.ai_score >= 4 %}
+                                <span class="badge bg-warning text-dark me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
+                            {% else %}
+                                <span class="badge bg-success me-2 mt-1 flex-shrink-0">{{ item.category|upper }}</span>
+                            {% endif %}
+                        {% endif %}   
+
                         <div class="d-flex justify-content-between w-100">
-                            <small class="text-light">{{ item.headline }}</small>
+                            {% if item.url %}
+                                <a href="{{ item.url }}" target="_blank" class="text-light text-decoration-none">
+                                    <small>{{ item.headline }}</small>
+                                </a>
+                            {% else %}
+                                <small class="text-light">{{ item.headline }}</small>
+                            {% endif %}
                             <span class="text-warning fw-bold ms-2 flex-shrink-0">{{ item.ai_score }}</span>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
-
+        
         <!-- CENTRE: Stock News + Country Risk Map -->
         <div class="col-md-4">
         <h6 class="text-warning mb-3"> WORLD STOCK NEWS</h6>
