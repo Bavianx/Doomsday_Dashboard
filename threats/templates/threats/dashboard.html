@@ -44,40 +44,34 @@
 <!-- Navbar + Clock row -->
 <div class="container-fluid px-4 py-2">
     <div class="row align-items-center">
-        
         <!-- Left: Logo (yet to be added) + Search Functionality + Threat bar stacked (needs moving to correct position) -->
-        <div class="col-md-9">
+        <div class="col-md-9 d-flex flex-column justify-content-between" style="min-height: 120px;">
             <!-- Logo + Search -->
-            <div class="d-flex align-items-center gap-3 mb-2">
-                <h4 style="color: #30ffee; font-weight: bold; text-decoration: none;"> <a href="/threats/">DOOMSDAY</h4></a>
+            <div class="d-flex align-items-center gap-5 mb-3">
+                <a href="/threats/" style="text-decoration: none;">
+                    <h4 style="color: #30ffee; font-weight: bold;">DOOMSDAY</h4>
+                </a>
                 <form method="GET" action="/threats/" class="d-flex w-75">
                     <input type="text" name="q" value="{{ query }}"
-                        class="form-control bg-dark text-light border-secondary"
-                        placeholder="🔍 Search threats..."
-                        style="opacity: 0.6;">
+                        class="form-control bg-dark border-secondary"
+                        style="opacity: 0.8; color: #ffffff;"
+                        placeholder="Search threats...">
                     <button type="submit" style="display: none;"></button>
                 </form> <!-- maybe do this for only underneath the search bar-->
             </div>
             <!-- Threat categories -->
-             <h7 class="text-warning mb-3 fw-bold"> THREAT CATEGORIES</h7>
-            <div class="card bg-dark border-secondary mt-1" style="width: 75%;">
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body py-2 d-flex justify-content-around align-items-center">
+            <div class="mt-5">
+                <div class="card bg-dark border-secondary px-3 py-2" style="width: 85%;">
+                    <div class="d-flex align-items-end gap-5">
+                        <small style="color: #ccccd4;">CURRENT THREAT LEVELS</small>
                         {% for category, score in category_scores.items %}
-                            <div class="text-center">
-                                {% if score >= 7 %}
-                                    <span class="badge bg-danger me-1">{{ category|upper }}</span>
-                                    <span style="color: #FF3B30; font-weight: bold;">{{ score }}</span>
-                                {% elif score >= 4 %}
-                                    <span class="badge bg-warning text-dark me-1">{{ category|upper }}</span>
-                                    <span style="color: #FFD700; font-weight: bold;">{{ score }}</span>
-                                {% else %}
-                                    <span class="badge bg-success me-1">{{ category|upper }}</span>
-                                    <span style="color: #4ADE80; font-weight: bold;">{{ score }}</span>
-                                {% endif %}
-                            </div>
-                            {% if not forloop.last %}
-                                <span style="color: #A1A1AA;">|</span>
+                            <span style="color: #A1A1AA;">|</span>
+                            {% if score >= 7 %}
+                                <span style="color: #FF3B30; font-weight: bold;">{{ category|upper }}: {{ score }}</span>
+                            {% elif score >= 4 %}
+                                <span style="color: #FFD700; font-weight: bold;">{{ category|upper }}: {{ score }}</span>
+                            {% else %}
+                                <span style="color: #4ADE80; font-weight: bold;">{{ category|upper }}: {{ score }}</span>
                             {% endif %}
                         {% endfor %}
                     </div>
@@ -185,12 +179,6 @@
 
         <!-- RIGHT: Clock + Global Score + AI Summary -->
         <div class="col-md-4">
-            <div class="text-end">
-                <div class="card bg-dark border-secondary d-inline-block px-3 py-1">
-                    <small style="color: #A1A1AA;">LOCAL TIME</small>
-                    <div style="color: #FFD700; font-weight: bold;" id="live-clock">--:--:--</div>
-                </div>
-            </div>
             <!-- Global Risk Score -->
             <h6 class="text-warning mb-2"> GLOBAL RISK SCORE</h6>
             <div class="card bg-danger mb-3">
@@ -269,6 +257,10 @@ updateClock();
     --green: #4ADE80;
     --muted: #A1A1AA;
 }
+::placeholder {
+    color: #A1A1AA !important;
+    opacity: 1;
+}
 
 body {
     background-color: var(--bg-primary) !important;
@@ -276,7 +268,7 @@ body {
 }
 
 /* Headings */
-h1, h3, h5, h6, h7 {
+h1, h3, h5, h6 {
     color: var(--yellow) !important;
 }
 
