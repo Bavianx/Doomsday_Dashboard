@@ -96,7 +96,6 @@
             </svg>
             <p class="small mt-1" style="color: #A1A1AA;"> Minutes to Midnight</p>
         </div>
-
     </div>
 </div>
 
@@ -172,7 +171,7 @@
             <h6 class="text-warning mb-3"> COUNTRY RISK MAP</h6>                <!-- Needs finishing tomorrow-->
             <div class="card bg-dark border-secondary" style="min-height: 220px;">
                 <div class="card-body">
-                    <small class="text-secondary">Plotly choropleth map — coming soon</small>
+                    <small class="text-secondary">{{ map_html|safe }}</small>
                 </div>
             </div>
         </div>
@@ -189,13 +188,20 @@
                 </div>
             </div>
             <!-- AI Summary -->
-            <h6 class="text-warning mb-2"> AI ASSESSMENT</h6>       <!-- Will change based on User requested search for live threat intelligence items-->
+            <h6 class="text-warning mb-2"> AI ASSESSMENT</h6>   
             <div class="card bg-dark border-secondary">
-                <div class="card-body">
-                    <pre class="text-light small mb-0" style="white-space: pre-wrap;">{{ summary.content }}</pre>
-                </div>
-            </div>
-
+                {% for line in summary.content.splitlines %}
+                    {% if line.strip %}
+                        {% if "ASSESSMENT" in line or "Headlines" in line %}
+                            <small class="fw-bold mb-2 d-block" style="color: rgba(255, 255, 255, 0.829);">{{ line.strip }}</small>
+                        {% else %}
+                            <div class="d-flex align-items-start mb-2">
+                                <span style="color: #4e4d4d; font-size: 10px; margin-top: 4px; margin-right: 8px;">■</span>
+                                <small class="text-light">{{ line.strip }}</small>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
         </div>
     </div>
 </div>

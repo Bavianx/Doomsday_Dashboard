@@ -9,6 +9,7 @@ from django.db.models import Avg
 import yfinance as yf
 import math, requests
 from decouple import config
+import plotly.express as px
 
 def dashboard(request):
     query = request.GET.get('q', '')    #Checks the URL for a query and a requested search after, else returns default (maximises content efficiency)
@@ -36,6 +37,11 @@ def dashboard(request):
         )
         market_news = market_response.json().get('articles', [])
         is_search = True
+
+    # Query specific search displays real AI assessment of user request and outputs valid analysis
+    # V2 — generate query-specific AI assessment using Claude API
+    # Flow: search results → Claude API → scored summary → display
+    # Requires Anthropic credits (Not buying yet as project is still under production(wasteful))
 
     else:
         news_items = NewsItem.objects.order_by('-created_at')[:10]  #Default data displayed incase users dont search
@@ -77,6 +83,58 @@ def dashboard(request):
                 'price': price,
                 'change': change
             })
+     # Hard coded country risk assessment. V2 will replace static dictionary with NLP-derived country scores from news headlines       
+    country_risk = {
+    "RUS": 9.1,
+    "CHN": 8.5,
+    "USA": 9.3,
+    "IRN": 8.6,
+    "BLR": 8.4,
+    "VEN": 8.9,
+    "COL": 8.7,
+    "PRK": 9,
+    "PAK": 8.8,
+    "UKR": 9.1,
+    "FRA": 7.5,
+    "GER": 7.9,
+    "ISR": 8.8,
+    "ARG": 7.9,
+    "YEM": 8.4,
+    "SYR": 8.5
+    }
+
+    map_fig = px.choropleth(
+        locations=list(country_risk.keys()), #Leverages stored ISO tags from the country_risk dictionary
+        locationmode="ISO-3",   
+        color=list(country_risk.values()), #Colours the content based on the risks values (higher the value the darker the colour)
+        color_continuous_scale="Reds", 
+        range_color=(0,10),  #Scale is 0-10 as the max severity risk is 10 
+        labels={'color': 'Risk Score'}
+    )
+
+    map_fig.update_layout(              #Map content (colouring and views) displaying the risk levels per country on a user friendly level 
+        paper_bgcolor='#131313',        
+        plot_bgcolor='#131313',
+        geo=dict(
+            bgcolor='#131313',
+            showframe=False,
+            showcoastlines=True,
+            coastlinecolor='#333333',
+            showland=True,
+            landcolor='#1a1a1a',
+            showocean=True,
+            oceancolor='#131313',
+            showcountries=True,
+            countrycolor='#333333'
+        ),
+
+        font_color='#ffffff',
+        margin=dict(l=0, r=0, t=0, b=0),
+        coloraxis_showscale=False,
+        height=250
+    )
+
+    map_html = map_fig.to_html(full_html=False, include_plotlyjs='cdn')
 
     context = {                 #Context dictionary holds commonly requested data for HTML pages
         'news_items': news_items,
@@ -90,6 +148,7 @@ def dashboard(request):
         'market_news': market_news,
         'query': query,
         'is_search': is_search,
+        'map_html': map_html,
     }
     return render(request, 'threats/dashboard.html', context)
 

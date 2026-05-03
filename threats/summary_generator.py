@@ -29,7 +29,7 @@ def generate_summary():
     
     recent_news = NewsItem.objects.order_by('-created_at')[:5]
     for item in recent_news:
-        summary_text += f"\n- [{item.category.upper()}] {item.headline} (Score: {item.ai_score})"
+        summary_text += f"\n[{item.category.upper()}] {item.headline} (Score: {item.ai_score})" 
     
     AISummary.objects.create(
         content=summary_text,
