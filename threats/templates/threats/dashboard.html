@@ -43,27 +43,27 @@
 
 <!-- Navbar + Clock row -->
 <div class="container-fluid px-4 py-2">
-    <div class="row align-items-center">
+    <div class="row align-items-center justify-content-center">
         <!-- Left: Logo (yet to be added) + Search Functionality + Threat bar stacked (needs moving to correct position) -->
         <div class="col-md-9 d-flex flex-column justify-content-between" style="min-height: 120px;">
             <!-- Logo + Search -->
-            <div class="d-flex align-items-center gap-5 mb-3">
+            <div class="d-flex align-items-center gap-5 mb-3 flex-wrap">
                 <a href="/threats/" style="text-decoration: none;">
                     <h4 style="color: #30ffee; font-weight: bold;">DOOMSDAY</h4>
                 </a>
-                <form method="GET" action="/threats/" class="d-flex w-75">
+                <form method="GET" action="/threats/" class="d-flex w-75" style="margin-left: 60px;">
                     <input type="text" name="q" value="{{ query }}"
-                        class="form-control bg-dark border-secondary"
-                        style="opacity: 0.8; color: #ffffff;"
+                        class="bg-transparent text-light border-0 border-bottom"
+                        style="outline: none; border-color: #A1A1AA !important; width: 500px;"
                         placeholder="Search threats...">
                     <button type="submit" style="display: none;"></button>
                 </form> <!-- maybe do this for only underneath the search bar-->
             </div>
             <!-- Threat categories -->
             <div class="mt-5">
-                <div class="card bg-dark border-secondary px-3 py-2" style="width: 85%;">
-                    <div class="d-flex align-items-end gap-5">
-                        <small style="color: #ccccd4;">CURRENT THREAT LEVELS</small>
+                <div class="card bg-dark border-secondary px-3 py-2 mx-auto" style="width: 85%;">
+                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center justify-content-md-start">
+                        <small style="color: #ccccd4; white-space: nowrap;">CURRENT THREAT LEVELS</small>
                         {% for category, score in category_scores.items %}
                             <span style="color: #A1A1AA;">|</span>
                             {% if score >= 7 %}
