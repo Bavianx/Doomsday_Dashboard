@@ -117,7 +117,7 @@
 <div class="container-fluid px-4 mt-3">
     <div class="row g-3">
         <!-- LEFT: Live Intelligence News Feed -->
-        <div class=" text-warning col-md-4 fw-bold letter-spacing-1">
+        <div class=" text-warning col-md-4">
                 {% if is_search %}
                      <h6> LIVE THREAT INTELLIGENCE   |   {{ query|upper }}  </h6>     <!-- Query based search for specific items -->
                 {% else %}
@@ -334,16 +334,17 @@ body {
     background-color: var(--bg-primary) !important;
     color: var(--muted);
 }
-
+h6 {
+    letter-spacing: 2px;
+    font-size: 0.75rem !important;
+    font-weight: 1700 !important;
+}
 /* Headings */
 h1, h3, h5, h6 {
     color: var(--yellow) !important;
 }
 
-h6 {
-    letter-spacing: 2px;
-    font-size: 0.75rem !important;
-}
+
 
 /* Ticker bar */
 .bg-black {
