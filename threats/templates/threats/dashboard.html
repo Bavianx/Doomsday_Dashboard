@@ -3,8 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Doomsday Dashboard</title>
+    <title>DOOMSDAY | Global Threat Intelligence</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{% static 'threats/images/logo-transparent.png' %}">
 </head>
 <body style="background-color: #131313;">
 
@@ -69,7 +70,7 @@
             <div class="mt-5">
                 <div class="card bg-dark border-secondary px-3 py-2 threat-bar-wrapper" style="width: 75%;">
                     <div class="d-flex align-items-center gap-2 flex-wrap threat-bar">
-                        <small style="color: #ccccd4; white-space: nowrap;">CURRENT THREAT LEVELS</small>
+                        <small style="color: #ffffff; white-space: nowrap;">CURRENT THREAT LEVELS</small>
                         {% for category, score in category_scores.items %}
                             <span style="color: #A1A1AA;">|</span>
                             {% if score >= 7 %}
@@ -90,17 +91,24 @@
             <svg width="180" height="180" viewBox="0 0 400 400">
                 <circle cx="200" cy="200" r="160" fill="#131313" stroke="#FF3B30" stroke-width="6"/>
                 <line x1="200" y1="45" x2="200" y2="75" stroke="#FF3B30" stroke-width="4"/>
-                <line x1="117" y1="62" x2="129" y2="83" stroke="#FF3B30" stroke-width="2"/>
-                <line x1="61" y1="117" x2="87" y2="129" stroke="#FF3B30" stroke-width="2"/>
-                <line x1="45" y1="200" x2="75" y2="200" stroke="#FF3B30" stroke-width="2"/>
-                <line x1="61" y1="283" x2="87" y2="271" stroke="#FF3B30" stroke-width="2"/>
-                <line x1="117" y1="338" x2="129" y2="317" stroke="#FF3B30" stroke-width="2"/>
-                <line x1="200" y1="355" x2="200" y2="325" stroke="#FF3B30" stroke-width="3"/>
+                <line x1="117" y1="62" x2="129" y2="83" stroke="#444" stroke-width="2"/>
+                <line x1="61" y1="117" x2="87" y2="129" stroke="#444" stroke-width="2"/>
+                <line x1="45" y1="200" x2="75" y2="200" stroke="#444" stroke-width="2"/>
+                <line x1="61" y1="283" x2="87" y2="271" stroke="#444" stroke-width="2"/>
+                <line x1="117" y1="338" x2="129" y2="317" stroke="#444" stroke-width="2"/>
+                <line x1="200" y1="355" x2="200" y2="325" stroke="#444" stroke-width="3"/>
                 <line x1="200" y1="200" x2="{{ tip_x }}" y2="{{ tip_y }}"
                     stroke="#FF3B30" stroke-width="6" stroke-linecap="round"/>
                 <circle cx="200" cy="200" r="8" fill="#FF3B30"/>
             </svg>
-            <p class="small mt-1" style="color: #A1A1AA;"> Minutes to Midnight</p>
+            <p class="small mt-1" style="
+                color: #FF3B30; 
+                letter-spacing: 3px; 
+                font-size: 0.6rem;
+                font-weight: bold;
+                animation: pulse 2s infinite;">
+                M I N U T E S &nbsp; T O &nbsp; M I D N I G H T
+            </p>
         </div>
     </div>
 </div>
@@ -109,7 +117,7 @@
 <div class="container-fluid px-4 mt-3">
     <div class="row g-3">
         <!-- LEFT: Live Intelligence News Feed -->
-        <div class="col-md-4">
+        <div class=" text-warning col-md-4 fw-bold letter-spacing-1">
                 {% if is_search %}
                      <h6> LIVE THREAT INTELLIGENCE   |   {{ query|upper }}  </h6>     <!-- Query based search for specific items -->
                 {% else %}
@@ -146,7 +154,7 @@
         
         <!-- CENTRE: Stock News + Country Risk Map -->
         <div class="col-md-4">
-        <h6 class="text-warning mb-3"> WORLD STOCK NEWS</h6>
+        <h6 class="text-warning mb-3 fw-bold"> WORLD STOCK NEWS</h6>
         <div class="card bg-dark border-secondary" style="height: 300px; overflow: hidden;">    <!-- Content is looped and hidden once passed the height marker-->
             <div class="card-body p-2 news-scroll-wrap">
                 <div class="news-scroll">
@@ -174,7 +182,7 @@
                 </div>
             </div>
         </div>
-            <h6 class="text-warning mb-3"> COUNTRY RISK MAP</h6>                <!-- Needs finishing tomorrow-->
+            <h6 class="text-warning mb-3 mt-2 fw-bold"> COUNTRY RISK MAP</h6>            
             <div class="card bg-dark border-secondary" style="min-height: 220px;">
                 <div class="card-body">
                     <small class="text-secondary">{{ map_html|safe }}</small>
@@ -186,11 +194,12 @@
         <div class="col-md-4">
             <!-- Global Risk Score -->
             <h6 class="text-warning mb-2"> GLOBAL RISK SCORE</h6>
-            <div class="card bg-danger mb-3">
+            <div class="card mb-3 risk-card-{% if global_score.score >= 7 %}high{% elif global_score.score >= 4 %}medium{% else %}low{% endif %}">
                 <div class="card-body text-center py-2">
-                    <h2 class="fw-bold mb-0">{{ global_score.score }}</h2>
-                        <div style= "color: #13131300"></div>
-                    <small>out of 10</small>
+                    <h2 class="fw-bold mb-0 risk-score-{% if global_score.score >= 7 %}high{% elif global_score.score >= 4 %}medium{% else %}low{% endif %}">
+                        {{ global_score.score }}
+                    </h2>
+                    <small style="color: #A1A1AA;">out of 10</small>
                 </div>
             </div>
             <!-- AI Summary -->
@@ -212,7 +221,7 @@
     </div>
 </div>
 
-<!-- Live clock script -->
+<!-- Live clock script, Nav bar content resizing for application window sizing-->
 <script>
 function updateClock() {
     document.getElementById('live-clock').textContent = new Date().toLocaleTimeString();
@@ -260,6 +269,12 @@ window.addEventListener('resize', function() {
     50% { transform: translateX(-100%); }
     50.001% { transform: translateX(100vw); }
     100% { transform: translateX(-100%); }
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.4; }
+    100% { opacity: 1; }
 }
 
 @media (max-width: 1050px) {
@@ -325,6 +340,11 @@ h1, h3, h5, h6 {
     color: var(--yellow) !important;
 }
 
+h6 {
+    letter-spacing: 2px;
+    font-size: 0.75rem !important;
+}
+
 /* Ticker bar */
 .bg-black {
     background-color: #0a0a0a8a !important;
@@ -352,6 +372,14 @@ h1, h3, h5, h6 {
 .card.bg-secondary {
     background-color: #1e1e1e !important;
 }
+
+.risk-card-high { background-color: #3d0000 !important; border: 2px solid #FF3B30 !important; }
+.risk-card-medium { background-color: #3d2600 !important; border: 2px solid #FFD700 !important; }
+.risk-card-low { background-color: #003d00 !important; border: 2px solid #4ADE80 !important; }
+
+.risk-score-high { color: #FF3B30 !important; }
+.risk-score-medium { color: #FFD700 !important; }
+.risk-score-low { color: #4ADE80 !important; }
 </style>
 </body>
 </html>
