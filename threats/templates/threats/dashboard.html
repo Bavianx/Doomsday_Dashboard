@@ -1,5 +1,5 @@
 <!-- Maybe add emojis for each title breaks up the wordy text on the dashboard, Fix colour scheme for app, box background colour for app depth-->
-
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,27 +42,33 @@
 </div>
 
 <!-- Navbar + Clock row -->
-<div class="container-fluid px-4 py-2">
+<div class="container-fluid px-4 py-2 navbar-top-padding">
     <div class="row align-items-center justify-content-center">
         <!-- Left: Logo (yet to be added) + Search Functionality + Threat bar stacked (needs moving to correct position) -->
         <div class="col-md-9 d-flex flex-column justify-content-between" style="min-height: 120px;">
             <!-- Logo + Search -->
-            <div class="d-flex align-items-center gap-5 mb-3 flex-wrap">
-                <a href="/threats/" style="text-decoration: none;">
-                    <h4 style="color: #30ffee; font-weight: bold;">DOOMSDAY</h4>
+            <!-- Logo + Search -->
+            <div class="d-flex align-items-center mb-2 navbar-shrink" style="position: relative;">
+                <!-- Logo pinned left -->
+                <a href="/threats/" style="text-decoration: none; position: absolute; left: 0;">
+                    <img src="{% static 'threats/images/logo-transparent.png' %}" 
+                        alt="Doomsday Logo" 
+                        style="height: clamp(110px, 3vw, 40px); background: none; object-fit: contain;">
                 </a>
-                <form method="GET" action="/threats/" class="d-flex w-75" style="margin-left: 60px;">
+                
+                <!-- Search bar centred independently -->
+                <form method="GET" action="/threats/" class="d-flex mx-auto" style="width: 40%;">
                     <input type="text" name="q" value="{{ query }}"
-                        class="bg-transparent text-light border-0 border-bottom"
-                        style="outline: none; border-color: #A1A1AA !important; width: 500px;"
+                        class="bg-transparent text-light border-0 border-bottom w-100"
+                        style="outline: none; border-color: #A1A1AA !important;"
                         placeholder="Search threats...">
                     <button type="submit" style="display: none;"></button>
-                </form> <!-- maybe do this for only underneath the search bar-->
+                </form>
             </div>
             <!-- Threat categories -->
             <div class="mt-5">
-                <div class="card bg-dark border-secondary px-3 py-2 mx-auto" style="width: 85%;">
-                    <div class="d-flex align-items-center gap-2 flex-wrap justify-content-center justify-content-md-start">
+                <div class="card bg-dark border-secondary px-3 py-2 threat-bar-wrapper" style="width: 75%;">
+                    <div class="d-flex align-items-center gap-2 flex-wrap threat-bar">
                         <small style="color: #ccccd4; white-space: nowrap;">CURRENT THREAT LEVELS</small>
                         {% for category, score in category_scores.items %}
                             <span style="color: #A1A1AA;">|</span>
@@ -213,6 +219,23 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+
+window.addEventListener('resize', function() {
+    const input = document.querySelector('.navbar-shrink input');
+    console.log('input found:', input);
+    console.log('window width:', window.innerWidth);
+    
+    if (input) {
+        const width = window.innerWidth;
+        if (width <= 1050) {
+            const newWidth = Math.max(120, (width / 1050) * 300);
+            input.style.width = newWidth + 'px';
+        } else {
+            input.style.width = '300px';
+        }
+    }
+});
 </script>
 
 <style>
@@ -237,6 +260,30 @@ updateClock();
     50% { transform: translateX(-100%); }
     50.001% { transform: translateX(100vw); }
     100% { transform: translateX(-100%); }
+}
+
+@media (max-width: 1050px) {
+    .navbar-shrink img {
+        height: 75px !important;
+    }
+}
+.navbar-shrink img,
+.navbar-shrink span,
+.navbar-shrink input {
+    transition: all 0.8s ease;
+}
+@media (max-width: 768px) {
+    .threat-bar {
+        justify-content: center !important;
+    }
+    .threat-bar-wrapper {
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    .navbar-top-padding {
+        padding-top: 45px !important;
+    }
+    
 }
 .news-scroll-wrap {
     overflow: hidden;
