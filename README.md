@@ -86,7 +86,7 @@ This project demonstrates:
 - System design thinking
 - Geopolitical and security domain knowledge
 
-## Important Application update for V1 functionality
+## Important Context update for V1 functionality
 
 Visit these URLs in order to populate the dashboard with live data:
  
