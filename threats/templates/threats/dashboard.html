@@ -182,7 +182,7 @@
                 </div>
             </div>
         </div>
-            <h6 class="text-warning mb-3 mt-2 fw-bold"> COUNTRY RISK MAP</h6>            
+            <h6 class="text-warning mb-3 mt-3 fw-bold"> COUNTRY RISK MAP</h6>            
             <div class="card bg-dark border-secondary" style="min-height: 220px;">
                 <div class="card-body">
                     <small class="text-secondary">{{ map_html|safe }}</small>
@@ -207,7 +207,7 @@
             <div class="card bg-dark border-secondary">
                 {% for line in summary.content.splitlines %}
                     {% if line.strip %}
-                        {% if "ASSESSMENT" in line or "Headlines" in line %}
+                        {% if "Assessment" in line or "Headlines" in line %}
                             <small class="fw-bold mb-2 d-block" style="color: rgba(255, 255, 255, 0.829);">{{ line.strip }}</small>
                         {% else %}
                             <div class="d-flex align-items-start mb-2">

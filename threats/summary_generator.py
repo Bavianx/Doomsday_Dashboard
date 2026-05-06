@@ -16,7 +16,9 @@ def generate_summary():
     
     # Generate summary text
     summary_text = f"""
-    GLOBAL THREAT ASSESSMENT
+    
+    Global Threat Assessment:
+
     Global Risk Score: {global_score.score if global_score else 'N/A'}/10
     
     Nuclear Threat: {scores['nuclear']}/10
