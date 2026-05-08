@@ -4,6 +4,11 @@ An AI-powered geopolitical intelligence dashboard that tracks global threat leve
 
 The application aggregates live news data across multiple threat vectors, uses Claude AI to score each headline for threat severity, and calculates a global risk score displayed as a visual clock showing how close the world is to midnight.
 
+
+**Live Demo:** https://bavianx.pythonanywhere.com/threats/
+
+Note: This is V1. V2 with Globe.gl, Three.js and PostgreSQL is in active development.
+
 ---
 ## Overview
  
@@ -35,7 +40,6 @@ The Doomsday Dashboard ingests live news headlines, scores them using AI, calcul
 
 ## In Development
 
-- Live Deployment
 - Version 2
 
 ---
