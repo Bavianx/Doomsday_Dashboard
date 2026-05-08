@@ -119,9 +119,9 @@
         <!-- LEFT: Live Intelligence News Feed -->
         <div class=" text-warning col-md-4">
                 {% if is_search %}
-                     <h6> LIVE THREAT INTELLIGENCE   |   {{ query|upper }}  </h6>     <!-- Query based search for specific items -->
+                     <h6 class="text-warning mb-3 fw-bold"> LIVE THREAT INTELLIGENCE   |   {{ query|upper }}  </h6>     <!-- Query based search for specific items -->
                 {% else %}
-                     <h6>LIVE THREAT INTELLIGENCE</h6>
+                     <h6 class="text-warning mb-3 fw-bold"> LIVE THREAT INTELLIGENCE</h6>
                 {% endif %}
             <div class="card bg-dark border-secondary p-3"> 
                 {% for item in news_items %}           
