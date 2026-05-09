@@ -224,7 +224,10 @@
 <!-- Live clock script, Nav bar content resizing for application window sizing-->
 <script>
 function updateClock() {
-    document.getElementById('live-clock').textContent = new Date().toLocaleTimeString();
+    const clockElement = document.getElementById('live-clock');
+    if (clockElement) {                                                 
+        clockElement.textContent = new Date().toLocaleTimeString();
+    }
 }
 setInterval(updateClock, 1000);
 updateClock();
